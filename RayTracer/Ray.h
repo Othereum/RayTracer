@@ -2,12 +2,12 @@
 #pragma once
 #include "Vector.h"
 
-struct Ray
+struct FRay
 {
 	FVector Origin, Dir;
 
-	Ray() {}
-	Ray(const FVector& Origin, const FVector& Dir) :Origin{ Origin }, Dir{ Dir } {}
+	FRay() {}
+	FRay(const FVector& Origin, const FVector& Dir) :Origin{ Origin }, Dir{ Dir } {}
 	
 	FVector PointAtParam(float T) const { return Origin + T * Dir; }
 };
