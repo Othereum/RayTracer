@@ -9,24 +9,29 @@
 #include "Ray.h"
 
 constexpr auto FileName = "image.ppm";
-constexpr unsigned Width = 200;
-constexpr unsigned Height = 100;
+constexpr unsigned Width = 960;
+constexpr unsigned Height = 540;
+constexpr float Ratio = Width * 1.f / Height;
+const FVector SphereLocation{ 1, 0, 0 };
+constexpr float SphereRadius = .5;
 
-bool HitSphere(const FVector& Center, float Radius, const FRay& Ray)
+float HitSphere(const FVector& Center, float Radius, const FRay& Ray)
 {
 	const FVector oc = Ray.Origin - Center;
 	const float a = Ray.Dir.SqrSize();
 	const float b = 2 * FVector::Dot(oc, Ray.Dir);
 	const float c = oc.SqrSize() - Radius * Radius;
 	const float d = b*b - 4*a*c;
-	return d > 0;
+	return d < 0 ? -1 : (-b - sqrt(d)) / (2 * a);
 }
 
 FColor Color(const FRay& Ray)
 {
-	if (HitSphere({ 1, 0, 0 }, .5, Ray))
+	if (const float T = HitSphere(SphereLocation, SphereRadius, Ray);
+		T > 0)
 	{
-		return FColor::Red;
+		const FVector N = FVector::GetNormal(Ray.PointAtParam(T) - SphereLocation);
+		return .5 * (FLinearColor{ N.X, N.Y, N.Z } + FLinearColor::White);
 	}
 
 	const FVector NormalDir = FVector::GetNormal(Ray.Dir);
@@ -36,9 +41,9 @@ FColor Color(const FRay& Ray)
 
 void Draw(std::ostream& Output)
 {
-	const FVector LowerLeftCorner{ 1, -2, -1 };
 	const FVector Horizontal{ 0, 4, 0 };
-	const FVector Vertical{ 0, 0, 2 };
+	const FVector Vertical{ 0, 0, Horizontal.Y / Ratio };
+	const FVector LowerLeftCorner{ 1, Horizontal.Y * -.5f, Vertical.Z * -.5f };
 	const FVector Origin;
 	for (unsigned y = 0; y < Height; ++y)
 	{
