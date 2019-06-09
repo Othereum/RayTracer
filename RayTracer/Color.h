@@ -11,6 +11,21 @@ struct FColor
 	FColor() :R{ 0 }, G{ 0 }, B{ 0 } {}
 	FColor(uint8_t R, uint8_t G, uint8_t B) :R{ R }, G{ G }, B{ B } {}
 	FColor(const FLinearColor& LinearColor);
+
+	static const FColor White;
+	static const FColor Black;
+	static const FColor Transparent;
+	static const FColor Red;
+	static const FColor Green;
+	static const FColor Blue;
+	static const FColor Yellow;
+	static const FColor Cyan;
+	static const FColor Magenta;
+	static const FColor Orange;
+	static const FColor Purple;
+	static const FColor Turquoise;
+	static const FColor Silver;
+	static const FColor Emerald;
 };
 
 struct FLinearColor
@@ -33,6 +48,15 @@ struct FLinearColor
 	FLinearColor operator/(const FLinearColor& C) const { return { R / C.R, G / C.G, B / C.B }; }
 	FLinearColor operator*(float Scale) const { return { R * Scale, G * Scale, B * Scale }; }
 	FLinearColor operator/(float Scale) const { return { R / Scale, G / Scale, B / Scale }; }
+
+	static const FLinearColor White;
+	static const FLinearColor Gray;
+	static const FLinearColor Black;
+	static const FLinearColor Transparent;
+	static const FLinearColor Red;
+	static const FLinearColor Green;
+	static const FLinearColor Blue;
+	static const FLinearColor Yellow;
 };
 
 FLinearColor operator*(float Scale, const FLinearColor& C)
@@ -53,3 +77,25 @@ std::ostream& operator<<(std::ostream& S, const FColor& C)
 		<< ' ' << static_cast<unsigned>(C.G)
 		<< ' ' << static_cast<unsigned>(C.B);
 }
+
+const FLinearColor FLinearColor::White(1.f, 1.f, 1.f);
+const FLinearColor FLinearColor::Gray(0.5f, 0.5f, 0.5f);
+const FLinearColor FLinearColor::Black(0, 0, 0);
+const FLinearColor FLinearColor::Red(1.f, 0, 0);
+const FLinearColor FLinearColor::Green(0, 1.f, 0);
+const FLinearColor FLinearColor::Blue(0, 0, 1.f);
+const FLinearColor FLinearColor::Yellow(1.f, 1.f, 0);
+
+const FColor FColor::White(255, 255, 255);
+const FColor FColor::Black(0, 0, 0);
+const FColor FColor::Red(255, 0, 0);
+const FColor FColor::Green(0, 255, 0);
+const FColor FColor::Blue(0, 0, 255);
+const FColor FColor::Yellow(255, 255, 0);
+const FColor FColor::Cyan(0, 255, 255);
+const FColor FColor::Magenta(255, 0, 255);
+const FColor FColor::Orange(243, 156, 18);
+const FColor FColor::Purple(169, 7, 228);
+const FColor FColor::Turquoise(26, 188, 156);
+const FColor FColor::Silver(189, 195, 199);
+const FColor FColor::Emerald(46, 204, 113);

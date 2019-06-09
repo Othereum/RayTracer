@@ -12,6 +12,28 @@ constexpr auto FileName = "image.ppm";
 constexpr unsigned Width = 200;
 constexpr unsigned Height = 100;
 
+bool HitSphere(const FVector& Center, float Radius, const FRay& Ray)
+{
+	const FVector oc = Ray.Origin - Center;
+	const float a = Ray.Dir.SqrSize();
+	const float b = 2 * FVector::Dot(oc, Ray.Dir);
+	const float c = oc.SqrSize() - Radius * Radius;
+	const float d = b*b - 4*a*c;
+	return d > 0;
+}
+
+FColor Color(const FRay& Ray)
+{
+	if (HitSphere({ 1, 0, 0 }, .5, Ray))
+	{
+		return FColor::Red;
+	}
+
+	const FVector NormalDir = FVector::GetNormal(Ray.Dir);
+	const float t = .5f * (NormalDir.Z + 1);
+	return Math::Lerp(FLinearColor::White, { .5f, .7f, 1 }, t);
+}
+
 void Draw(std::ostream& Output)
 {
 	const FVector LowerLeftCorner{ 1, -2, -1 };
@@ -23,11 +45,9 @@ void Draw(std::ostream& Output)
 		for (unsigned x = 0; x < Width; ++x)
 		{
 			const float u = static_cast<float>(x) / Width;
-			const float v = static_cast<float>(Height - y - 1) / Height;
-			const FRay r{ Origin, LowerLeftCorner + u * Horizontal + v * Vertical };
-			const float t = .5f * (FVector::GetNormal(r.Dir).Z + 1.f);
-			const FColor Color = Math::Lerp<FLinearColor>({}, { .5f, .7f, 1.f }, t);
-			Output << Color << '\n';
+			const float v = (Height - y - 1.f) / Height;
+			const FRay Ray{ Origin, LowerLeftCorner + u * Horizontal + v * Vertical };
+			Output << Color(Ray) << '\n';
 		}
 	}
 }
