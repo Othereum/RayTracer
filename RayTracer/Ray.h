@@ -4,7 +4,12 @@
 
 struct FRay
 {
-	FVector Origin, Dir;
+	// Origin location
+	FVector Origin;
+	
+	// Ray direction
+	// Note that it may not be a unit vector
+	FVector Dir;
 
 	FRay() {}
 	FRay(const FVector& Origin, const FVector& Dir) :Origin{ Origin }, Dir{ Dir } {}

@@ -8,8 +8,10 @@ struct FVector
 {
 	// Forward
 	float X;
+
 	// Right
 	float Y;
+
 	// Up
 	float Z;
 	
