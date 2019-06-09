@@ -20,7 +20,25 @@ struct FLinearColor
 	FLinearColor() :R{ 0 }, G{ 0 }, B{ 0 } {}
 	FLinearColor(float R, float G, float B) :R{ R }, G{ G }, B{ B } {}
 	FLinearColor(const FColor& Color) :R{ Color.R / 255.f }, G{ Color.G / 255.f }, B{ Color.B / 255.f } {}
+
+	FLinearColor& operator+=(const FLinearColor& C) { R += C.R; G += C.G; B += C.B; return *this; }
+	FLinearColor& operator-=(const FLinearColor& C) { R -= C.R; G -= C.G; B -= C.B; return *this; }
+	FLinearColor& operator*=(const FLinearColor& C) { R *= C.R; G *= C.G; B *= C.B; return *this; }
+	FLinearColor& operator/=(const FLinearColor& C) { R /= C.R; G /= C.G; B /= C.B; return *this; }
+	FLinearColor& operator*=(float Scale) { R *= Scale; G *= Scale; B *= Scale; return *this; }
+	FLinearColor& operator/=(float Scale) { R /= Scale; G /= Scale; B /= Scale; return *this; }
+	FLinearColor operator+(const FLinearColor& C) const { return { R + C.R, G + C.G, B + C.B }; }
+	FLinearColor operator-(const FLinearColor& C) const { return { R - C.R, G - C.G, B - C.B }; }
+	FLinearColor operator*(const FLinearColor& C) const { return { R * C.R, G * C.G, B * C.B }; }
+	FLinearColor operator/(const FLinearColor& C) const { return { R / C.R, G / C.G, B / C.B }; }
+	FLinearColor operator*(float Scale) const { return { R * Scale, G * Scale, B * Scale }; }
+	FLinearColor operator/(float Scale) const { return { R / Scale, G / Scale, B / Scale }; }
 };
+
+FLinearColor operator*(float Scale, const FLinearColor& C)
+{
+	return C * Scale;
+}
 
 FColor::FColor(const FLinearColor& LinearColor)
 	:R{ static_cast<uint8_t>(LinearColor.R * 255.99999f) },
