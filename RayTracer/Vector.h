@@ -2,9 +2,16 @@
 #pragma once
 #include <cmath>
 
+// Represents the location or direction of the 3D space
+// Left handed coordinate system, Z-axis goes up
 struct FVector
 {
-	float X, Y, Z;
+	// Forward
+	float X;
+	// Right
+	float Y;
+	// Up
+	float Z;
 	
 	FVector() :X{ 0 }, Y{ 0 }, Z{ 0 } {}
 	FVector(float X, float Y, float Z) :X{ X }, Y{ Y }, Z{ Z } {}
