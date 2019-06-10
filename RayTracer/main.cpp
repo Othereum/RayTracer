@@ -5,46 +5,43 @@
 #include <iostream>
 
 #include "Color.h"
+#include "HitableList.h"
 #include "Math.h"
 #include "Ray.h"
+#include "Sphere.h"
 
 constexpr auto FileName = "image.ppm";
-constexpr unsigned Width = 960;
-constexpr unsigned Height = 540;
-constexpr float Ratio = Width * 1.f / Height;
-const FVector SphereLocation{ 1, 0, 0 };
-constexpr float SphereRadius = .5;
+constexpr unsigned Width = 200;
+constexpr unsigned Height = 100;
+constexpr float Ratio = static_cast<float>(Width) / Height;
+const FVector SphereLocation{ 1.f, 0.f, 0.f };
+constexpr float SphereRadius = .5f;
 
-float HitSphere(const FVector& Center, float Radius, const FRay& Ray)
+FColor Color(const FRay& Ray, const Hitable& World)
 {
-	const FVector oc = Ray.Origin - Center;
-	const float a = Ray.Dir.SqrSize();
-	const float b = 2 * FVector::Dot(oc, Ray.Dir);
-	const float c = oc.SqrSize() - Radius * Radius;
-	const float d = b*b - 4*a*c;
-	return d < 0 ? -1 : (-b - sqrt(d)) / (2 * a);
-}
-
-FColor Color(const FRay& Ray)
-{
-	if (const float T = HitSphere(SphereLocation, SphereRadius, Ray);
-		T > 0)
+	HitRecord Record;
+	if (World.Hit(Record, Ray))
 	{
-		const FVector N = FVector::GetNormal(Ray.PointAtParam(T) - SphereLocation);
-		return .5 * (FLinearColor{ N.X, N.Y, N.Z } + FLinearColor::White);
+		return .5f * (FLinearColor{ Record.Normal.X, Record.Normal.Y, Record.Normal.Z } + FLinearColor::White);
 	}
 
 	const FVector NormalDir = FVector::GetNormal(Ray.Dir);
-	const float t = .5f * (NormalDir.Z + 1);
-	return Math::Lerp(FLinearColor::White, { .5f, .7f, 1 }, t);
+	const float t = .5f * (NormalDir.Z + 1.f);
+	return Math::Lerp(FLinearColor::White, { .5f, .7f, 1.f }, t);
 }
 
 void Draw(std::ostream& Output)
 {
-	const FVector Horizontal{ 0, 4, 0 };
-	const FVector Vertical{ 0, 0, Horizontal.Y / Ratio };
-	const FVector LowerLeftCorner{ 1, Horizontal.Y * -.5f, Vertical.Z * -.5f };
+	const FVector Horizontal{ 0.f, 4.f, 0.f };
+	const FVector Vertical{ 0.f, 0.f, Horizontal.Y / Ratio };
+	const FVector LowerLeftCorner{ 1.f, Horizontal.Y * -.5f, Vertical.Z * -.5f };
 	const FVector Origin;
+
+	std::vector<std::unique_ptr<Hitable>> List;
+	List.push_back(std::make_unique<Sphere>(SphereLocation, SphereRadius));
+	List.push_back(std::make_unique<Sphere>(FVector{ 1.f, 0.f, -100.5f }, 100.f));
+	HitableList World{ std::move(List) };
+
 	for (unsigned y = 0; y < Height; ++y)
 	{
 		for (unsigned x = 0; x < Width; ++x)
@@ -52,7 +49,7 @@ void Draw(std::ostream& Output)
 			const float u = static_cast<float>(x) / Width;
 			const float v = (Height - y - 1.f) / Height;
 			const FRay Ray{ Origin, LowerLeftCorner + u * Horizontal + v * Vertical };
-			Output << Color(Ray) << '\n';
+			Output << Color(Ray, World) << '\n';
 		}
 	}
 }

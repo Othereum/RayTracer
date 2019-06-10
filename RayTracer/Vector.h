@@ -50,7 +50,7 @@ struct FVector
 	}
 };
 
-FVector operator*(float Scale, const FVector& V)
+inline FVector operator*(float Scale, const FVector& V)
 {
 	return V * Scale;
 }
