@@ -6,12 +6,12 @@
 
 class HitableList : public Hitable
 {
-	std::vector<std::unique_ptr<Hitable>> List;
-
 public:
 	HitableList() {}
-	HitableList(decltype(List)&& List) :List{ std::move(List) } {}
+	HitableList(std::vector<std::unique_ptr<Hitable>>&& List) :List{ std::move(List) } {}
 
 	virtual bool Hit(HitRecord& OutRecord, const FRay& Ray,
 		float TMin = 0, float TMax = std::numeric_limits<float>::max()) const override;
+
+	std::vector<std::unique_ptr<Hitable>> List;
 };
