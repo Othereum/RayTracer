@@ -2,14 +2,14 @@
 #include "HitableList.h"
 #include "Ray.h"
 
-bool HitableList::Hit(HitRecord& OutRecord, const FRay& Ray, float TMin, float TMax) const
+bool FHitableList::Hit(FHitRecord& OutRecord, const FRay& Ray, float TMin, float TMax) const
 {
-	HitRecord TmpRecord;
+	FHitRecord TmpRecord;
 	bool bHit = false;
 	float ClosestSoFar = TMax;
-	for (const std::unique_ptr<Hitable>& Hitable : List)
+	for (const std::unique_ptr<FHitable>& FHitable : List)
 	{
-		if (Hitable->Hit(TmpRecord, Ray, TMin, ClosestSoFar))
+		if (FHitable->Hit(TmpRecord, Ray, TMin, ClosestSoFar))
 		{
 			bHit = true;
 			ClosestSoFar = TmpRecord.T;

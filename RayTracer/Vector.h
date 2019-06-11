@@ -48,7 +48,13 @@ struct FVector
 	{
 		return { V1.Y * V2.Z - V1.Z * V2.Y, -(V1.X * V2.Z - V1.Z * V2.X), V1.X * V2.Y - V1.Y * V2.X };
 	}
+
+	static const FVector Zero;
+	static const FVector One;
 };
+
+inline const FVector FVector::Zero;
+inline const FVector FVector::One{ 1.f, 1.f, 1.f };
 
 inline FVector operator*(float Scale, const FVector& V)
 {

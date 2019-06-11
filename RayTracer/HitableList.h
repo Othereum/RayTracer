@@ -4,14 +4,15 @@
 #include <vector>
 #include "Hitable.h"
 
-class HitableList : public Hitable
+class FHitableList : public FHitable
 {
 public:
-	HitableList() {}
-	HitableList(std::vector<std::unique_ptr<Hitable>>&& List) :List{ std::move(List) } {}
+	FHitableList() {}
+	FHitableList(std::vector<std::unique_ptr<FHitable>>&& List) :List{ std::move(List) } {}
 
-	virtual bool Hit(HitRecord& OutRecord, const FRay& Ray,
-		float TMin = 0, float TMax = std::numeric_limits<float>::max()) const override;
+	virtual bool Hit(FHitRecord& OutRecord, const FRay& Ray,
+		float TMin = std::numeric_limits<float>::min(),
+		float TMax = std::numeric_limits<float>::max()) const override;
 
-	std::vector<std::unique_ptr<Hitable>> List;
+	std::vector<std::unique_ptr<FHitable>> List;
 };

@@ -3,7 +3,7 @@
 #include <limits>
 #include "Vector.h"
 
-struct HitRecord
+struct FHitRecord
 {
 	float T;
 	FVector HitLocation;
@@ -12,9 +12,10 @@ struct HitRecord
 
 struct FRay;
 
-class Hitable
+class FHitable
 {
 public:
-	virtual bool Hit(HitRecord& OutRecord, const FRay& Ray,
-		float TMin = 0, float TMax = std::numeric_limits<float>::max()) const = 0;
+	virtual bool Hit(FHitRecord& OutRecord, const FRay& Ray,
+		float TMin = std::numeric_limits<float>::min(),
+		float TMax = std::numeric_limits<float>::max()) const = 0;
 };

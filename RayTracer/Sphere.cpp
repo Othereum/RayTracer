@@ -2,7 +2,7 @@
 #include "Ray.h"
 #include "Sphere.h"
 
-bool Sphere::Hit(HitRecord& OutRecord, const FRay& Ray, float TMin, float TMax) const
+bool FSphere::Hit(FHitRecord& OutRecord, const FRay& Ray, float TMin, float TMax) const
 {
 	const FVector oc = Ray.Origin - Center;
 	const float a = Ray.Dir.SqrSize();
