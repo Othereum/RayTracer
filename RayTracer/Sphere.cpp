@@ -14,7 +14,7 @@ bool FSphere::Hit(FHitRecord& OutRecord, const FRay& Ray, float TMin, float TMax
 	{
 		auto f = [&](float T)
 		{
-			if (TMin <= T && T <= TMax)
+			if (TMin < T && T < TMax)
 			{
 				OutRecord.T = T;
 				OutRecord.HitLocation = Ray.PointAtParam(T);
