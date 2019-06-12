@@ -34,7 +34,6 @@ struct FLinearColor
 
 	FLinearColor() :R{ 0 }, G{ 0 }, B{ 0 } {}
 	FLinearColor(float R, float G, float B) :R{ R }, G{ G }, B{ B } {}
-	FLinearColor(const FColor& Color) :R{ Color.R / 255.f }, G{ Color.G / 255.f }, B{ Color.B / 255.f } {}
 
 	FLinearColor& operator+=(const FLinearColor& C) { R += C.R; G += C.G; B += C.B; return *this; }
 	FLinearColor& operator-=(const FLinearColor& C) { R -= C.R; G -= C.G; B -= C.B; return *this; }
@@ -65,9 +64,9 @@ FLinearColor operator*(float Scale, const FLinearColor& C)
 }
 
 FColor::FColor(const FLinearColor& LinearColor)
-	:R{ static_cast<uint8_t>(LinearColor.R * 255.99999f) },
-	G{ static_cast<uint8_t>(LinearColor.G * 255.99999f) },
-	B{ static_cast<uint8_t>(LinearColor.B * 255.99999f) }
+	:R{ static_cast<uint8_t>(sqrt(LinearColor.R) * 255.99999f) },
+	G{ static_cast<uint8_t>(sqrt(LinearColor.G) * 255.99999f) },
+	B{ static_cast<uint8_t>(sqrt(LinearColor.B) * 255.99999f) }
 {
 }
 

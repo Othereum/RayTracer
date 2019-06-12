@@ -13,8 +13,8 @@
 #include "../Public/Sphere.h"
 
 constexpr auto FileName = "image.ppm";
-constexpr unsigned Width = 384;
-constexpr unsigned Height = 216;
+constexpr unsigned Width = 200;
+constexpr unsigned Height = 100;
 constexpr unsigned NumAASamples = 100;
 const FVector SphereLocation{ 1.f, 0.f, 0.f };
 constexpr float SphereRadius = .5f;
