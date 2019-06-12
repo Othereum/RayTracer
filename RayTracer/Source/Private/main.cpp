@@ -14,8 +14,8 @@
 #include "../Public/Sphere.h"
 
 constexpr auto FileName = "image.ppm";
-constexpr unsigned Width = 200;
-constexpr unsigned Height = 100;
+constexpr unsigned Width = 512;
+constexpr unsigned Height = 256;
 constexpr unsigned NumAASamples = 100;
 constexpr std::chrono::seconds ProgressInterval{ 1 };
 
@@ -51,8 +51,8 @@ void Draw(std::vector<std::vector<FColor>>& Output)
 	HHitableList World;
 	World.List.push_back(std::make_unique<HSphere>(FVector{ 1.f, 0.f, 0.f }, .5f, std::make_unique<MLambertian>(FLinearColor{ .8f, .3f, .3f })));
 	World.List.push_back(std::make_unique<HSphere>(FVector{ 1.f, 0.f, -100.5f }, 100.f, std::make_unique<MLambertian>(FLinearColor{ .8f, .8f, 0.f })));
-	World.List.push_back(std::make_unique<HSphere>(FVector{ 1.f, 1.f, 0.f }, .5f, std::make_unique<MMetal>(FLinearColor{ .8f, .6f, .2f })));
-	World.List.push_back(std::make_unique<HSphere>(FVector{ 1.f, -1.f, 0.f }, .5f, std::make_unique<MMetal>(FLinearColor{ .8f, .8f, .8f })));
+	World.List.push_back(std::make_unique<HSphere>(FVector{ 1.f, 1.f, 0.f }, .5f, std::make_unique<MMetal>(FLinearColor{ .8f, .6f, .2f }, 1.f)));
+	World.List.push_back(std::make_unique<HSphere>(FVector{ 1.f, -1.f, 0.f }, .5f, std::make_unique<MMetal>(FLinearColor{ .8f, .8f, .8f }, .3f)));
 
 	std::atomic<unsigned> pp = 0;
 	auto Draw = [&](unsigned YS, unsigned YE)
