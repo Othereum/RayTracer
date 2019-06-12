@@ -1,6 +1,6 @@
 // Copyright (c) 2019, Othereum. All rights reserved.
-#include "HitableList.h"
-#include "Ray.h"
+#include "../Public/HitableList.h"
+#include "../Public/Ray.h"
 
 bool FHitableList::Hit(FHitRecord& OutRecord, const FRay& Ray, float TMin, float TMax) const
 {

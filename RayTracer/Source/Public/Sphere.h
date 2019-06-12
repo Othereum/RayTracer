@@ -8,9 +8,7 @@ public:
 	FSphere() {}
 	FSphere(const FVector& Center, float Radius) :Center{ Center }, Radius{ Radius } {}
 	
-	virtual bool Hit(FHitRecord& OutRecord, const FRay& Ray,
-		float TMin = std::numeric_limits<float>::min(),
-		float TMax = std::numeric_limits<float>::max()) const override;
+	virtual bool Hit(FHitRecord& OutRecord, const FRay& Ray, float TMin, float TMax) const override;
 
 	FVector Center;
 	float Radius = 0;

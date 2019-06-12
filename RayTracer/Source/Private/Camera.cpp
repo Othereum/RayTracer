@@ -1,5 +1,5 @@
-#include "Camera.h"
-#include "Ray.h"
+#include "../Public/Camera.h"
+#include "../Public/Ray.h"
 
 FRay FCamera::GetRay(float U, float V) const
 {

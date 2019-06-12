@@ -10,9 +10,7 @@ public:
 	FHitableList() {}
 	FHitableList(std::vector<std::unique_ptr<FHitable>>&& List) :List{ std::move(List) } {}
 
-	virtual bool Hit(FHitRecord& OutRecord, const FRay& Ray,
-		float TMin = std::numeric_limits<float>::min(),
-		float TMax = std::numeric_limits<float>::max()) const override;
+	virtual bool Hit(FHitRecord& OutRecord, const FRay& Ray, float TMin, float TMax) const override;
 
 	std::vector<std::unique_ptr<FHitable>> List;
 };

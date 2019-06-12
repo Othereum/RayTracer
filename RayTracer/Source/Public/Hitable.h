@@ -16,6 +16,5 @@ class FHitable
 {
 public:
 	virtual bool Hit(FHitRecord& OutRecord, const FRay& Ray,
-		float TMin = std::numeric_limits<float>::min(),
-		float TMax = std::numeric_limits<float>::max()) const = 0;
+		float TMin = .001f, float TMax = std::numeric_limits<float>::max()) const = 0;
 };

@@ -5,19 +5,20 @@
 #include <random>
 #include <vector>
 
-#include "Camera.h"
-#include "Color.h"
-#include "HitableList.h"
-#include "Math.h"
-#include "Ray.h"
-#include "Sphere.h"
+#include "../Public/Camera.h"
+#include "../Public/Color.h"
+#include "../Public/HitableList.h"
+#include "../Public/Math.h"
+#include "../Public/Ray.h"
+#include "../Public/Sphere.h"
 
 constexpr auto FileName = "image.ppm";
-constexpr unsigned Width = 1920;
-constexpr unsigned Height = 1080;
-constexpr unsigned NumAASamples = 10000;
+constexpr unsigned Width = 384;
+constexpr unsigned Height = 216;
+constexpr unsigned NumAASamples = 100;
 const FVector SphereLocation{ 1.f, 0.f, 0.f };
 constexpr float SphereRadius = .5f;
+constexpr std::chrono::seconds ProgressInterval{ 1 };
 
 constexpr float Ratio = static_cast<float>(Width) / Height;
 constexpr unsigned NumPixel = Width * Height;
@@ -91,19 +92,17 @@ void Draw(std::vector<std::vector<FColor>>& Output)
 	fv.reserve(NumThread);
 	const unsigned ntr = Height / NumThread;
 	for (unsigned i = 0; i < NumThread - 1; ++i)
-		fv.push_back(std::async(std::launch::async, Draw, ntr * i, ntr * (i + 1)));
-	fv.push_back(std::async(std::launch::async, Draw, ntr * (NumThread-1), Height));
-	std::cout << "Created " << NumThread << " parallel tasks.\n";
+		fv.push_back(std::async(Draw, ntr * i, ntr * (i + 1)));
+	fv.push_back(std::async(Draw, ntr * (NumThread-1), Height));
+	std::cout << "Created " << NumThread << " parallel tasks.\n\n";
 	
-	using namespace std::chrono_literals;
-	auto WaitTime = 1s;
 	unsigned OldP = 0;
 	while (pp < NumPixel)
 	{
 		unsigned NewP = 100 * pp / NumPixel;
 		if (NewP > OldP)
 			std::cout << "Progress: " << (OldP = NewP) << "%\n";
-		auto until = std::chrono::system_clock::now() + WaitTime;
+		auto until = std::chrono::system_clock::now() + ProgressInterval;
 		for (auto& f : fv)
 			f.wait_until(until);
 	}
@@ -127,5 +126,5 @@ int main()
 	std::cout << "Resolution: " << Width << 'x' << Height << '\n';
 	std::cout << "AA samples: " << NumAASamples << "\n\n";
 	CreateImageFile();
-	std::cout << FileName << " created successfully!\nTime took: " << duration<float>{system_clock::now() - Start}.count() << "s\n";
+	std::cout << '\n' << FileName << " created successfully!\nTime took: " << duration<float>{system_clock::now() - Start}.count() << "s\n";
 }

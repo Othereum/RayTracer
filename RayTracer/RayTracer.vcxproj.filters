@@ -15,42 +15,42 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="Source\Private\Camera.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Sphere.cpp">
+    <ClCompile Include="Source\Private\HitableList.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="HitableList.cpp">
+    <ClCompile Include="Source\Private\main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
+    <ClCompile Include="Source\Private\Sphere.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Color.h">
+    <ClInclude Include="Source\Public\Camera.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Vector.h">
+    <ClInclude Include="Source\Public\Hitable.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Ray.h">
+    <ClInclude Include="Source\Public\HitableList.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Math.h">
+    <ClInclude Include="Source\Public\Color.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Hitable.h">
+    <ClInclude Include="Source\Public\Math.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Sphere.h">
+    <ClInclude Include="Source\Public\Ray.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="HitableList.h">
+    <ClInclude Include="Source\Public\Sphere.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
+    <ClInclude Include="Source\Public\Vector.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

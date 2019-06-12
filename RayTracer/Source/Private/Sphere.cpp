@@ -1,6 +1,6 @@
 // Copyright (c) 2019, Othereum. All rights reserved.
-#include "Ray.h"
-#include "Sphere.h"
+#include "../Public/Ray.h"
+#include "../Public/Sphere.h"
 
 bool FSphere::Hit(FHitRecord& OutRecord, const FRay& Ray, float TMin, float TMax) const
 {
