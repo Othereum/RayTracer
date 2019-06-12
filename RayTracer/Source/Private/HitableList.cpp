@@ -1,19 +1,16 @@
-// Copyright (c) 2019, Othereum. All rights reserved.
 #include "../Public/HitableList.h"
 #include "../Public/Ray.h"
 
-bool FHitableList::Hit(FHitRecord& OutRecord, const FRay& Ray, float TMin, float TMax) const
+bool HHitableList::Hit(FHitRecord& OutRecord, const FRay& Ray, float TMin, float TMax) const
 {
-	FHitRecord TmpRecord;
 	bool bHit = false;
 	float ClosestSoFar = TMax;
-	for (const std::unique_ptr<FHitable>& FHitable : List)
+	for (const std::unique_ptr<HHitable>& HHitable : List)
 	{
-		if (FHitable->Hit(TmpRecord, Ray, TMin, ClosestSoFar))
+		if (HHitable->Hit(OutRecord, Ray, TMin, ClosestSoFar))
 		{
 			bHit = true;
-			ClosestSoFar = TmpRecord.T;
-			OutRecord = TmpRecord;
+			ClosestSoFar = OutRecord.T;
 		}
 	}
 	return bHit;

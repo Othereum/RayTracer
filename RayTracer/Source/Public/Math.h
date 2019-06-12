@@ -1,6 +1,6 @@
-// Copyright (c) 2019, Othereum. All rights reserved.
 #pragma once
 
+struct FVector;
 namespace Math
 {
 	template <class T>
@@ -8,4 +8,8 @@ namespace Math
 	{
 		return (1.f - t) * A + t * B;
 	}
+
+	FVector RandomInUnitSphere();
+	FVector Reflect(const FVector& V, const FVector& N);
+	float Rand(float Min = 0, float Max = 1);
 }

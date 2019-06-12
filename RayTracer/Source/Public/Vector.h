@@ -1,4 +1,3 @@
-// Copyright (c) 2019, Othereum. All rights reserved.
 #pragma once
 #include <cmath>
 

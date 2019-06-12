@@ -1,8 +1,8 @@
-// Copyright (c) 2019, Othereum. All rights reserved.
+
 #include "../Public/Ray.h"
 #include "../Public/Sphere.h"
 
-bool FSphere::Hit(FHitRecord& OutRecord, const FRay& Ray, float TMin, float TMax) const
+bool HSphere::Hit(FHitRecord& OutRecord, const FRay& Ray, float TMin, float TMax) const
 {
 	const FVector oc = Ray.Origin - Center;
 	const float a = Ray.Dir.SqrSize();
@@ -19,6 +19,7 @@ bool FSphere::Hit(FHitRecord& OutRecord, const FRay& Ray, float TMin, float TMax
 				OutRecord.T = T;
 				OutRecord.HitLocation = Ray.PointAtParam(T);
 				OutRecord.Normal = (OutRecord.HitLocation - Center) / Radius;
+				OutRecord.Material = Material;
 				return true;
 			}
 			return false;
