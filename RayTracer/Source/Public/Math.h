@@ -11,6 +11,7 @@ namespace Math
 
 	float Rand(float Min = 0, float Max = 1);
 	FVector RandomInUnitSphere();
+	FVector RandomInUnitCircle();
 	FVector Reflect(const FVector& V, const FVector& N);
 	bool Refract(const FVector& V, const FVector& N, float NiOverNt, FVector& OutRefracted);
 	float Schlick(float Cosine, float RefractiveIndex);

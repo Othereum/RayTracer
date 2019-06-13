@@ -20,6 +20,18 @@ FVector Math::RandomInUnitSphere()
 	}
 }
 
+FVector Math::RandomInUnitCircle()
+{
+	while (true)
+	{
+		if (FVector P{ Rand(-1), Rand(-1), 0 };
+			P.SqrSize() >= 1.f)
+		{
+			return P;
+		}
+	}
+}
+
 FVector Math::Reflect(const FVector& V, const FVector& N)
 {
 	return V - 2.f * FVector::Dot(V, N) * N;
