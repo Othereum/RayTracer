@@ -6,6 +6,7 @@
 
 #include "../Public/Camera.h"
 #include "../Public/Color.h"
+#include "../Public/Dielectric.h"
 #include "../Public/HitableList.h"
 #include "../Public/Lambertian.h"
 #include "../Public/Math.h"
@@ -16,7 +17,7 @@
 constexpr auto FileName = "image.ppm";
 constexpr unsigned Width = 512;
 constexpr unsigned Height = 256;
-constexpr unsigned NumAASamples = 100;
+constexpr unsigned NumAASamples = 1000;
 constexpr std::chrono::seconds ProgressInterval{ 1 };
 
 constexpr float Ratio = static_cast<float>(Width) / Height;
@@ -49,10 +50,16 @@ void Draw(std::vector<std::vector<FColor>>& Output)
 	Camera.LowerLeftCorner = { 1.f, Camera.Horizontal.Y * -.5f, Camera.Vertical.Z * -.5f };
 
 	HHitableList World;
-	World.List.push_back(std::make_unique<HSphere>(FVector{ 1.f, 0.f, 0.f }, .5f, std::make_unique<MLambertian>(FLinearColor{ .8f, .3f, .3f })));
-	World.List.push_back(std::make_unique<HSphere>(FVector{ 1.f, 0.f, -100.5f }, 100.f, std::make_unique<MLambertian>(FLinearColor{ .8f, .8f, 0.f })));
-	World.List.push_back(std::make_unique<HSphere>(FVector{ 1.f, 1.f, 0.f }, .5f, std::make_unique<MMetal>(FLinearColor{ .8f, .6f, .2f }, 1.f)));
-	World.List.push_back(std::make_unique<HSphere>(FVector{ 1.f, -1.f, 0.f }, .5f, std::make_unique<MMetal>(FLinearColor{ .8f, .8f, .8f }, .3f)));
+	World.List.push_back(std::make_unique<HSphere>(FVector{ 1.f, 0.f, 0.f }, .5f,
+		std::make_unique<MLambertian>(FLinearColor{ .1f, .2f, .5f })));
+	World.List.push_back(std::make_unique<HSphere>(FVector{ 1.f, 0.f, -100.5f }, 100.f,
+		std::make_unique<MLambertian>(FLinearColor{ .8f, .8f, 0.f })));
+	World.List.push_back(std::make_unique<HSphere>(FVector{ 1.f, 1.f, 0.f }, .5f,
+		std::make_unique<MMetal>(FLinearColor{ .8f, .6f, .2f }, 0.1f)));
+	World.List.push_back(std::make_unique<HSphere>(FVector{ 1.f, -1.f, 0.f }, .5f,
+		std::make_unique<MDielectric>(1.5f)));
+	World.List.push_back(std::make_unique<HSphere>(FVector{ 1.f, -1.f, 0.f }, -.45f,
+		std::make_unique<MDielectric>(1.5f)));
 
 	std::atomic<unsigned> pp = 0;
 	auto Draw = [&](unsigned YS, unsigned YE)

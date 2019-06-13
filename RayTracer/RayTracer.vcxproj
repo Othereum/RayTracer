@@ -148,6 +148,7 @@
   <ItemGroup>
     <ClCompile Include="Source\Private\Camera.cpp" />
     <ClCompile Include="Source\Private\Color.cpp" />
+    <ClCompile Include="Source\Private\Dielectric.cpp" />
     <ClCompile Include="Source\Private\HitableList.cpp" />
     <ClCompile Include="Source\Private\main.cpp" />
     <ClCompile Include="Source\Private\Math.cpp" />
@@ -158,6 +159,7 @@
   <ItemGroup>
     <ClInclude Include="Source\Public\Camera.h" />
     <ClInclude Include="Source\Public\Color.h" />
+    <ClInclude Include="Source\Public\Dielectric.h" />
     <ClInclude Include="Source\Public\Hitable.h" />
     <ClInclude Include="Source\Public\HitableList.h" />
     <ClInclude Include="Source\Public\Lambertian.h" />

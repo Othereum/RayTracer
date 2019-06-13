@@ -9,7 +9,9 @@ namespace Math
 		return (1.f - t) * A + t * B;
 	}
 
+	float Rand(float Min = 0, float Max = 1);
 	FVector RandomInUnitSphere();
 	FVector Reflect(const FVector& V, const FVector& N);
-	float Rand(float Min = 0, float Max = 1);
+	bool Refract(const FVector& V, const FVector& N, float NiOverNt, FVector& OutRefracted);
+	float Schlick(float Cosine, float RefractiveIndex);
 }
