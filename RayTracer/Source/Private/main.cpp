@@ -17,9 +17,9 @@
 using namespace std::chrono;
 
 constexpr auto FileName = "image.ppm";
-constexpr unsigned Width = 960;
-constexpr unsigned Height = 540;
-constexpr unsigned NumAASamples = 128;
+constexpr unsigned Width = 1920;
+constexpr unsigned Height = 1080;
+constexpr unsigned NumAASamples = 8192;
 constexpr seconds ProgressInterval{ 1 };
 
 constexpr float Ratio = static_cast<float>(Width) / Height;
@@ -115,8 +115,9 @@ void Draw(std::vector<std::vector<FColor>>& Output, const time_point<system_cloc
 	{
 		unsigned NewP = 100 * pp / NumPixel;
 		auto Now = system_clock::now();
+		auto Elapsed = duration_cast<seconds>(Now - Start).count();
 		if (NewP > OldP)
-			std::cout << "Progress: " << (OldP = NewP) << "%\tElapsed: " << duration_cast<seconds>(Now - Start).count() << "s\n";
+			std::cout << "Progress: " << (OldP = NewP) << "%\tElapsed: " << Elapsed << "s\tRemaining: " << Elapsed / NewP * (100 - NewP) << "s\n";
 		Now += ProgressInterval;
 		for (auto& f : fv)
 			f.wait_until(Now);
