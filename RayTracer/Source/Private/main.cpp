@@ -19,12 +19,28 @@ using namespace std::chrono;
 constexpr auto FileName = "image.ppm";
 constexpr unsigned Width = 1920;
 constexpr unsigned Height = 1080;
-constexpr unsigned NumAASamples = 8192;
+constexpr unsigned NumAASamples = 10;
 constexpr seconds ProgressInterval{ 1 };
 
 constexpr float Ratio = static_cast<float>(Width) / Height;
 constexpr unsigned NumPixel = Width * Height;
 const unsigned NumThread = std::thread::hardware_concurrency() * 5 / 2;
+
+struct FConfig
+{
+	std::string ImageFileName;
+	unsigned Width, Height;
+	unsigned SamplePerPixel;
+	unsigned ThreadOverride;
+
+	FConfig();
+};
+
+const FConfig& GetConfig()
+{
+	static const FConfig Config;
+	return Config;
+}
 
 FLinearColor GetColor(const FRay& Ray, const HHitable& World, unsigned Depth = 0)
 {
@@ -53,7 +69,7 @@ void Draw(std::vector<std::vector<FColor>>& Output, const time_point<system_cloc
 	FCamera Camera{ LookFrom, LookAt, {0.f, 0.f, 1.f}, 20, Ratio, Aperture, DistToFocus };
 
 	HHitableList World;
-	World.List.push_back(std::make_unique<HSphere>(FVector{ 0, 0, -1000 }, 1000, std::make_unique<MLambertian>(FLinearColor{ .5f, .5f, .5f })));
+	World.List.push_back(std::make_unique<HSphere>(FVector{ 0, 0, -1000 }, 1000.f, std::make_unique<MLambertian>(FLinearColor{ .5f, .5f, .5f })));
 	for (int a = -11; a < 11; ++a)
 	{
 		for (int b = -11; b < 11; ++b)
@@ -106,18 +122,20 @@ void Draw(std::vector<std::vector<FColor>>& Output, const time_point<system_cloc
 	fv.reserve(NumThread);
 	const unsigned ntr = Height / NumThread;
 	for (unsigned i = 0; i < NumThread - 1; ++i)
-		fv.push_back(std::async(std::launch::async, Draw, ntr * i, ntr * (i + 1)));
-	fv.push_back(std::async(std::launch::async, Draw, ntr * (NumThread-1), Height));
+		fv.push_back(std::async(Draw, ntr * i, ntr * (i + 1)));
+	fv.push_back(std::async(Draw, ntr * (NumThread-1), Height));
 	std::cout << "Created " << NumThread << " parallel tasks.\n\n";
 	
-	unsigned OldP = 0;
+	float OldP = 0.f;
+	auto Last = system_clock::now();
 	while (pp < NumPixel)
 	{
-		unsigned NewP = 100 * pp / NumPixel;
+		float NewP = 100.f * pp / NumPixel;
 		auto Now = system_clock::now();
-		auto Elapsed = duration_cast<seconds>(Now - Start).count();
-		if (NewP > OldP)
-			std::cout << "Progress: " << (OldP = NewP) << "%\tElapsed: " << Elapsed << "s\tRemaining: " << Elapsed / NewP * (100 - NewP) << "s\n";
+		auto Elapsed = duration<float>(Now - Start).count();
+		if ((unsigned)NewP > (unsigned)OldP)
+			std::cout << "Progress: " << unsigned(OldP = NewP) << "%\tElapsed: " << (unsigned)Elapsed << "s\tRemaining: " << unsigned(duration<float>{Now - Last}.count() * (100.f - NewP)) << "s\n";
+		Last = Now;
 		Now += ProgressInterval;
 		for (auto& f : fv)
 			f.wait_until(Now);
@@ -143,4 +161,10 @@ int main()
 	std::cout << "AA samples: " << NumAASamples << "\n\n";
 	CreateImageFile(Start);
 	std::cout << '\n' << FileName << " created successfully!\nTime took: " << duration<float>{ system_clock::now() - Start }.count() << "s\n";
+}
+
+FConfig::FConfig()
+{
+	std::ifstream is{ "config.txt" };
+	
 }
