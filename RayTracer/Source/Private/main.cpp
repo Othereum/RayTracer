@@ -17,30 +17,14 @@
 using namespace std::chrono;
 
 constexpr auto FileName = "image.ppm";
-constexpr unsigned Width = 1920;
-constexpr unsigned Height = 1080;
+constexpr unsigned Width = 3840;
+constexpr unsigned Height = 2160;
 constexpr unsigned NumAASamples = 10;
 constexpr seconds ProgressInterval{ 1 };
 
 constexpr float Ratio = static_cast<float>(Width) / Height;
 constexpr unsigned NumPixel = Width * Height;
 const unsigned NumThread = std::thread::hardware_concurrency() * 5 / 2;
-
-struct FConfig
-{
-	std::string ImageFileName;
-	unsigned Width, Height;
-	unsigned SamplePerPixel;
-	unsigned ThreadOverride;
-
-	FConfig();
-};
-
-const FConfig& GetConfig()
-{
-	static const FConfig Config;
-	return Config;
-}
 
 FLinearColor GetColor(const FRay& Ray, const HHitable& World, unsigned Depth = 0)
 {
@@ -128,14 +112,23 @@ void Draw(std::vector<std::vector<FColor>>& Output, const time_point<system_cloc
 	
 	float OldP = 0.f;
 	auto Last = system_clock::now();
+	float Remaining = 0.f;
 	while (pp < NumPixel)
 	{
-		float NewP = 100.f * pp / NumPixel;
+		const float NewP = 100.f * pp / NumPixel;
 		auto Now = system_clock::now();
-		auto Elapsed = duration<float>(Now - Start).count();
-		if ((unsigned)NewP > (unsigned)OldP)
-			std::cout << "Progress: " << unsigned(OldP = NewP) << "%\tElapsed: " << (unsigned)Elapsed << "s\tRemaining: " << unsigned(duration<float>{Now - Last}.count() * (100.f - NewP)) << "s\n";
-		Last = Now;
+		if (static_cast<unsigned>(NewP) > static_cast<unsigned>(OldP))
+		{
+			const unsigned Elapsed = static_cast<unsigned>(duration<float>(Now - Start).count());
+			std::cout << "Progress: " << static_cast<unsigned>(OldP = NewP) << "%\tElapsed: " << Elapsed << "s\tRemaining: ";
+			const float R = duration<float>{ Now - Last }.count() * (100.f - NewP);
+			Remaining = Remaining ? (Remaining + R) / 2.f : R;
+			if (Remaining >= 60.f)
+				std::cout << "about " << round(Remaining / 60.f) << "m\n";
+			else
+				std::cout << "about " << round(Remaining) << "s\n";
+			Last = Now;
+		}
 		Now += ProgressInterval;
 		for (auto& f : fv)
 			f.wait_until(Now);
@@ -161,10 +154,4 @@ int main()
 	std::cout << "AA samples: " << NumAASamples << "\n\n";
 	CreateImageFile(Start);
 	std::cout << '\n' << FileName << " created successfully!\nTime took: " << duration<float>{ system_clock::now() - Start }.count() << "s\n";
-}
-
-FConfig::FConfig()
-{
-	std::ifstream is{ "config.txt" };
-	
 }
