@@ -65,7 +65,7 @@ void Draw(std::vector<std::vector<FColor>>& Output, const time_point<system_cloc
 	FVector LookFrom{ -3, 13, 2 };
 	FVector LookAt{ 0, 0, 0 };
 	float DistToFocus = 10;
-	float Aperture = .1;
+	float Aperture = .1f;
 	FCamera Camera{ LookFrom, LookAt, {0.f, 0.f, 1.f}, 20, GetConfig().Ratio, Aperture, DistToFocus };
 
 	HHitableList World;
@@ -75,8 +75,8 @@ void Draw(std::vector<std::vector<FColor>>& Output, const time_point<system_cloc
 		for (int b = -11; b < 11; ++b)
 		{
 			float ChooseMat = Math::Rand();
-			FVector Center{ a + Math::Rand(0, .9), b + Math::Rand(0, .9), .2 };
-			if ((Center - FVector{ 4, .2, 0 }).Size() > .9f)
+			FVector Center{ a + Math::Rand(0, .9f), b + Math::Rand(0, .9f), .2f };
+			if ((Center - FVector{ 4, .2f, 0 }).Size() > .9f)
 			{
 				if (ChooseMat < .8f)
 				{
@@ -94,8 +94,8 @@ void Draw(std::vector<std::vector<FColor>>& Output, const time_point<system_cloc
 		}
 	}
 	World.List.push_back(std::make_unique<HSphere>(FVector{ 0, 0, 1 }, 1.f, std::make_unique<MDielectric>(1.5f)));
-	World.List.push_back(std::make_unique<HSphere>(FVector{ 0, -4, 1 }, 1.f, std::make_unique<MLambertian>(FLinearColor{ .4, .2, .1 })));
-	World.List.push_back(std::make_unique<HSphere>(FVector{ 0, 4, 1 }, 1.f, std::make_unique<MMetal>(FLinearColor{ .7, .6, .5 }, 0.f)));
+	World.List.push_back(std::make_unique<HSphere>(FVector{ 0, -4, 1 }, 1.f, std::make_unique<MLambertian>(FLinearColor{ .4f, .2f, .1f })));
+	World.List.push_back(std::make_unique<HSphere>(FVector{ 0, 4, 1 }, 1.f, std::make_unique<MMetal>(FLinearColor{ .7f, .6f, .5f }, 0.f)));
 
 	std::atomic<unsigned> pp = 0;
 	auto Draw = [&](unsigned YS, unsigned YE)
