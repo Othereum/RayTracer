@@ -6,6 +6,7 @@
 
 #include "../Public/Camera.h"
 #include "../Public/Color.h"
+#include "../Public/Config.h"
 #include "../Public/Dielectric.h"
 #include "../Public/HitableList.h"
 #include "../Public/Lambertian.h"
@@ -15,16 +16,6 @@
 #include "../Public/Sphere.h"
 
 using namespace std::chrono;
-
-constexpr auto FileName = "image.ppm";
-constexpr unsigned Width = 3840;
-constexpr unsigned Height = 2160;
-constexpr unsigned NumAASamples = 10;
-constexpr seconds ProgressInterval{ 1 };
-
-constexpr float Ratio = static_cast<float>(Width) / Height;
-constexpr unsigned NumPixel = Width * Height;
-const unsigned NumThread = std::thread::hardware_concurrency() * 5 / 2;
 
 FLinearColor GetColor(const FRay& Ray, const HHitable& World, unsigned Depth = 0)
 {
@@ -44,13 +35,38 @@ FLinearColor GetColor(const FRay& Ray, const HHitable& World, unsigned Depth = 0
 	return Math::Lerp(FLinearColor::White, { .5f, .7f, 1.f }, t);
 }
 
+std::string FormatDuration(unsigned Seconds, bool bShort = false)
+{
+	std::string Result;
+	if (Seconds >= 3600)
+	{
+		Result += std::to_string(Seconds / 3600);
+		Result += "h ";
+		if (bShort) return Result;
+		Seconds %= 3600;
+	}
+	if (Seconds >= 60)
+	{
+		Result += std::to_string(Seconds / 60);
+		Result += "m ";
+		if (bShort) return Result;
+		Seconds %= 60;
+	}
+	if (Seconds > 0 || Result.size() == 0)
+	{
+		Result += std::to_string(Seconds);
+		Result += 's';
+	}
+	return Result;
+}
+
 void Draw(std::vector<std::vector<FColor>>& Output, const time_point<system_clock>& Start)
 {
 	FVector LookFrom{ -3, 13, 2 };
 	FVector LookAt{ 0, 0, 0 };
 	float DistToFocus = 10;
 	float Aperture = .1;
-	FCamera Camera{ LookFrom, LookAt, {0.f, 0.f, 1.f}, 20, Ratio, Aperture, DistToFocus };
+	FCamera Camera{ LookFrom, LookAt, {0.f, 0.f, 1.f}, 20, GetConfig().Ratio, Aperture, DistToFocus };
 
 	HHitableList World;
 	World.List.push_back(std::make_unique<HSphere>(FVector{ 0, 0, -1000 }, 1000.f, std::make_unique<MLambertian>(FLinearColor{ .5f, .5f, .5f })));
@@ -86,16 +102,16 @@ void Draw(std::vector<std::vector<FColor>>& Output, const time_point<system_cloc
 	{
 		for (unsigned y = YS; y < YE; ++y)
 		{
-			const float v = (Height - y - 1.f) / Height;
-			for (unsigned x = 0; x < Width; ++x)
+			const float v = (GetConfig().Height - y - 1.f) / GetConfig().Height;
+			for (unsigned x = 0; x < GetConfig().Width; ++x)
 			{
-				const float u = (x * 1.f) / Width;
+				const float u = (x * 1.f) / GetConfig().Width;
 				FLinearColor Color = GetColor(Camera.GetRay(u, v), World);
-				for (unsigned s = 0; s < NumAASamples; ++s)
+				for (unsigned s = 0; s < GetConfig().NumAASamples; ++s)
 				{
-					Color += GetColor(Camera.GetRay(u + Math::Rand() / Width, v + Math::Rand() / Height), World);
+					Color += GetColor(Camera.GetRay(u + Math::Rand() / GetConfig().Width, v + Math::Rand() / GetConfig().Height), World);
 				}
-				Color /= NumAASamples + 1;
+				Color /= GetConfig().NumAASamples + 1.f;
 				Output[y][x] = Color;
 				++pp;
 			}
@@ -103,33 +119,30 @@ void Draw(std::vector<std::vector<FColor>>& Output, const time_point<system_cloc
 	};
 
 	std::vector<std::future<void>> fv;
-	fv.reserve(NumThread);
-	const unsigned ntr = Height / NumThread;
-	for (unsigned i = 0; i < NumThread - 1; ++i)
+	fv.reserve(GetConfig().NumThread);
+	const unsigned ntr = GetConfig().Height / GetConfig().NumThread;
+	for (unsigned i = 0; i < GetConfig().NumThread - 1; ++i)
 		fv.push_back(std::async(Draw, ntr * i, ntr * (i + 1)));
-	fv.push_back(std::async(Draw, ntr * (NumThread-1), Height));
-	std::cout << "Created " << NumThread << " parallel tasks.\n\n";
+	fv.push_back(std::async(Draw, ntr * (GetConfig().NumThread-1), GetConfig().Height));
+	std::cout << "Created " << GetConfig().NumThread << " parallel tasks.\n\n";
 	
 	float OldP = 0.f;
 	auto Last = system_clock::now();
 	float Remaining = 0.f;
-	while (pp < NumPixel)
+	while (pp < GetConfig().NumPixel)
 	{
-		const float NewP = 100.f * pp / NumPixel;
+		const float NewP = 100.f * pp / GetConfig().NumPixel;
 		auto Now = system_clock::now();
 		if (static_cast<unsigned>(NewP) > static_cast<unsigned>(OldP))
 		{
-			const unsigned Elapsed = static_cast<unsigned>(duration<float>(Now - Start).count());
-			std::cout << "Progress: " << static_cast<unsigned>(OldP = NewP) << "%\tElapsed: " << Elapsed << "s\tRemaining: ";
 			const float R = duration<float>{ Now - Last }.count() * (100.f - NewP);
 			Remaining = Remaining ? (Remaining + R) / 2.f : R;
-			if (Remaining >= 60.f)
-				std::cout << "about " << round(Remaining / 60.f) << "m\n";
-			else
-				std::cout << "about " << round(Remaining) << "s\n";
+			std::cout << "Progress: " << static_cast<unsigned>(OldP = NewP)
+				<< "%\tElapsed: " << FormatDuration(static_cast<unsigned>(duration_cast<seconds>(Now - Start).count()))
+				<< "\tRemaining: about " << FormatDuration(static_cast<unsigned>(Remaining), true) << '\n';
 			Last = Now;
 		}
-		Now += ProgressInterval;
+		Now += 1s;
 		for (auto& f : fv)
 			f.wait_until(Now);
 	}
@@ -137,10 +150,10 @@ void Draw(std::vector<std::vector<FColor>>& Output, const time_point<system_cloc
 
 void CreateImageFile(const time_point<system_clock>& Start)
 {
-	std::vector<std::vector<FColor>> Pixels(Height, std::vector<FColor>{ Width });
+	std::vector<std::vector<FColor>> Pixels(GetConfig().Height, std::vector<FColor>{ GetConfig().Width });
 	Draw(Pixels, Start);
-	std::ofstream OutImageFile{ FileName };
-	OutImageFile << "P3\n" << Width << ' ' << Height << "\n255\n";
+	std::ofstream OutImageFile{ GetConfig().ImageFileName };
+	OutImageFile << "P3\n" << GetConfig().Width << ' ' << GetConfig().Height << "\n255\n";
 	for (auto& Row : Pixels)
 		for (auto& Pixel : Row)
 			OutImageFile << Pixel << '\n';
@@ -148,10 +161,18 @@ void CreateImageFile(const time_point<system_clock>& Start)
 
 int main()
 {
-	using namespace std::chrono;
-	const auto Start = system_clock::now();
-	std::cout << "Resolution: " << Width << 'x' << Height << '\n';
-	std::cout << "AA samples: " << NumAASamples << "\n\n";
-	CreateImageFile(Start);
-	std::cout << '\n' << FileName << " created successfully!\nTime took: " << duration<float>{ system_clock::now() - Start }.count() << "s\n";
+	try
+	{
+		GetConfig();
+		using namespace std::chrono;
+		const auto Start = system_clock::now();
+		std::cout << "Successfully loaded config file!\n" << GetConfig() << "\n\n";
+		CreateImageFile(Start);
+		std::cout << '\n' << GetConfig().ImageFileName << " created successfully!\nTime took: "
+			<< FormatDuration(static_cast<unsigned>(duration_cast<seconds>(system_clock::now() - Start).count())) << '\n';
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "Exception: " << e.what() << ". Check the config.ini file.\n";
+	}
 }
